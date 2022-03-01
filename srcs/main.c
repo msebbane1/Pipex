@@ -6,101 +6,68 @@
 /*   By: msebbane <msebbane@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/23 11:46:13 by msebbane          #+#    #+#             */
-/*   Updated: 2022/03/01 15:25:38 by msebbane         ###   ########.fr       */
+/*   Updated: 2022/03/01 16:26:36 by msebbane         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../includes/pipex.h"
 
-
-// parsing (somewhere in your code)
-/*
-char *PATH_from_envp;
-char **mypaths;
-char **mycmdargs;
-// recuperer the line PATH from envp
-PATH_from_envp = ft_substr(envp ....);
-mypaths = ft_split(PATH_from_envp, ":"); // see section 4 for a
-                                            small note[0]
-mycmdargs = ft_split(ag[2], " ");
-// in your child or parent process
-int  i;
-char *cmd;
-i = -1;
-while (mypaths[++i])
+/*fonction qui va chercher la ligne du chemin inside de l'environement , 
+il va split et tester chaque command du chemin et retourne la bonne*/
+char	*find_path(char *cmd, char **envp)
 {
-    cmd = ft_join(mypaths[i], ag[2]); // protect your ft_join
-    execve(cmd, mycmdargs, envp); // if execve succeeds, it exits
-    // perror("Error"); <- add perror to debug
-    free(cmd) // if execve fails, we free and we try a new path
-}
-return (EXIT_FAILURE);*/
-/*Fonction excuve*/
-/*
-void	execute(char *argv, char **envp)
-{
-	char	**cmd;
-	int		i;
+	char	**paths;
 	char	*path;
-
-	i = -1;
-	cmd = ft_split(argv, ' ');
-	path = find_path(cmd[0], envp);
-	if (!path)	
-	{
-		while (cmd[++i])
-			free(cmd[i]);
-		free(cmd);
-		error();
-	}
-	if (execve(path, cmd, envp) == -1)
-		error();
-}*/
-
-
-void	execute(char *argv, char **envp)
-{
-	char	*PATH_from_envp;
-	char	**mypaths;
-	char	**mycmdargs
 	int		i;
-	char	*cmd;
-	// recuperer the line PATH from envp
-	PATH_from_envp = ft_substr(envp ....);
-	mypaths = ft_split(PATH_from_envp, ":");
-	mycmdargs = ft_split(ag[2], " ");
-	i = -1;
-	while (mypaths[++i])
+	char	*part_path;
+
+	i = 0;
+	while (ft_strnstr(envp[i], "PATH", 4) == 0)
+		i++;
+	paths = ft_split(envp[i] + 5, ':');
+	i = 0;
+	while (paths[i])
 	{
-    	cmd = ft_join(mypaths[i], ag[2]); // protect your ft_join
-    	execve(cmd, mycmdargs, envp); // if execve succeeds, it exits
-    	// perror("Error"); <- add perror to debug
-    	free(cmd); // if execve fails, we free and we try a new path
+		part_path = ft_strjoin(paths[i], "/");
+		path = ft_strjoin(part_path, cmd);
+		free(part_path);
+		if (access(path, F_OK) == 0)
+			return (path);
+		free(path);
+		i++;
 	}
+	i = -1;
+	while (paths[++i])
+		free(paths[i]);
+	free(paths);
+	return (0);
 }
 
-void	parent_process(int fileout, char *cmd2, int *end)
+
+void	parent_process(int fileout, char **argv, char **envp, int *end)
 {
-	dup2(fileout, STDIN_FILENO); // -> // fileout is the stdout
+	dup2(fileout, STDIN_FILENO); // -> fileout is the stdout
 	dup2(end[0], STDOUT_FILENO); // -> end[0] is the stdin
 	close(end[1]); // fermeture du pipe qu'on utilise pas
 	close(fileout);
-	//execute(argv[3], cmd1); // execve function for each possible path (see below)
+	run(argv[3], envp); // execve function for each possible path (see below)
+	exit(EXIT_SUCCESS);
 }
 
-void	child_process(int filein, char *cmd1, int *end)
+void	child_process(int filein, char **argv, char **envp, int *end)
 {
 	dup2(filein, STDIN_FILENO); // -> (l'entree(filein) devient le vrai stdin) // we want filein to be execve() input
 	dup2(end[1], STDOUT_FILENO); // -> La sortie standart deviens end[1] // we want end[1] to be execve() stdout
 	close(end[0]); // fermeture du pipe qu'on utilise pas
 	close(filein);
-	//execute(argv[2], cmd1); // execve function for each possible path (see below)
+	run(argv[2], envp); // execve function for each possible path (see below)
+	exit(EXIT_SUCCESS);
 }
 
 /*fork() divisera notre processus en deux sous-processus : il renvoie 0 pour le processus enfant, un nombre différent de zéro pour le processus parent ou un -1 en cas d'erreur.
 Aussi: fork() divise le processus en deux processus parallèles et simultanés, qui se produisent en même temps. Ce sera important pour la section 2.
 */
-void	pipex(int filein, int fileout, char *cmd1, char *cmd2)
+void	pipex(int filein, int fileout, char **argv, char **envp)
 {
 	int		end[2];
 	int		parent;
@@ -119,14 +86,12 @@ void	pipex(int filein, int fileout, char *cmd1, char *cmd2)
 	}
 	if (!parent) //  ou parent == 0 si fork() returns 0, we are in the child process
 	{
-		child_process(filein, cmd1, end);
-		exit(EXIT_SUCCESS);
+		child_process(filein, argv, envp, end);
 	}
 	else
 	{
 		waidpid(parent, NULL, 0);
-		parent_process(fileout, cmd2, end);
-		exit(EXIT_SUCCESS);
+		parent_process(fileout, argv, envp, end);
 	}
 }
 
@@ -138,7 +103,7 @@ int	main(int argc, char **argv, char **envp)
 	filein = open(argv[1], O_RDONLY, 0777);
 	if (filein == -1)
 	{
-		perror("filein");
+		perror("filein failed");
 		exit(EXIT_FAILURE);
 	}
 	fileout = open(argv[4], O_CREAT | O_RDWR | O_TRUNC, 0644);
