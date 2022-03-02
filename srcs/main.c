@@ -6,7 +6,7 @@
 /*   By: msebbane <msebbane@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/23 11:46:13 by msebbane          #+#    #+#             */
-/*   Updated: 2022/03/02 15:49:30 by msebbane         ###   ########.fr       */
+/*   Updated: 2022/03/02 16:21:38 by msebbane         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,11 +23,9 @@ void	parent_process(int fileout, char **argv, char **envp, int *end)
 void	child_process(int filein, char **argv, char **envp, int *end)
 {
 	dup2(end[1], STDOUT_FILENO); // -> (l'entree(filein) devient le vrai stdin) // we want filein to be execve() input
-	//close(end[0]);
 	dup2(filein, STDIN_FILENO); // -> La sortie standart deviens end[1] // we want end[1] to be execve() stdout
 	close(end[0]);
 	run(argv[2], envp);// execve function for each possible path (see below)
-	//exit(EXIT_SUCCESS);
 }
 
 /*fork() divisera notre processus en deux sous-processus : il renvoie 0 pour le processus enfant, un nombre différent de zéro pour le processus parent ou un -1 en cas d'erreur.
@@ -74,11 +72,14 @@ int	main(int argc, char **argv, char **envp)
 			exit(EXIT_FAILURE);
 		}
 		fileout = open(argv[4], O_CREAT | O_RDWR | O_TRUNC, 0644);
-		if (filein < 0 || fileout < 0)
-			return (-1);
+		if (fileout == -1)
+		{
+			perror("fileout failed");
+			exit(EXIT_FAILURE);
+		}
 		pipex(filein, fileout, argv, envp);
 	}
 	else
-		perror("Missing arguments or files");
+		ft_putstr_fd("Missing arguments or files", 2);
 	return (0);
 }

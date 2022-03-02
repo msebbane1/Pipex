@@ -6,7 +6,7 @@
 /*   By: msebbane <msebbane@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/01 15:33:37 by msebbane          #+#    #+#             */
-/*   Updated: 2022/03/02 15:50:08 by msebbane         ###   ########.fr       */
+/*   Updated: 2022/03/02 16:21:51 by msebbane         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -78,4 +78,3 @@ void	run(char *argv, char **envp)
 		exit(EXIT_SUCCESS);
 	}
 }
-
