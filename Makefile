@@ -6,7 +6,7 @@
 #    By: msebbane <msebbane@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2021/10/07 21:50:04 by marvin            #+#    #+#              #
-#    Updated: 2022/03/01 15:23:12 by msebbane         ###   ########.fr        #
+#    Updated: 2022/03/02 13:01:00 by msebbane         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -20,7 +20,7 @@ OBJECTS	= ./bin
 CFLAGS = -Wall -Wextra -Werror -g #-fsanitize=address
 
 SRCS = libft/ft_split.c srcs/main.c libft/ft_strjoin.c libft/ft_strlen.c \
-libft/ft_substr.c
+libft/ft_substr.c srcs/pipex.c
 
 SRCS_BONUS = 
 
@@ -58,5 +58,6 @@ fclean: clean
 		${RM} *.out
 		
 re: fclean all
+	@echo "\033[0m"
 
 .PHONY: all bonus clean fclean re

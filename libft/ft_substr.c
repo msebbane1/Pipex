@@ -6,7 +6,7 @@
 /*   By: msebbane <msebbane@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/01 14:50:15 by msebbane          #+#    #+#             */
-/*   Updated: 2022/03/01 15:18:52 by msebbane         ###   ########.fr       */
+/*   Updated: 2022/03/02 11:36:19 by msebbane         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,6 +32,12 @@ char	*ft_strdup(const char *s)
 	return (dest);
 }
 
+/** 
+ * Alloue avec malloc et retourne une chaine de caractères 
+ * issue de la chaine ’s’. Cette nouvelle chaine commence à l’index ’start’ et
+ * a pour taille maximale ’len’ La fonction substr renvoie une partie 
+ * d'une chaîne.
+ **/
 char	*ft_substr(char const *s, unsigned int start, size_t len)
 {
 	char	*str;
