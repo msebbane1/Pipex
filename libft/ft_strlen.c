@@ -6,11 +6,23 @@
 /*   By: msebbane <msebbane@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/10/07 11:08:37 by marvin            #+#    #+#             */
-/*   Updated: 2022/03/02 09:56:45 by msebbane         ###   ########.fr       */
+/*   Updated: 2022/03/02 15:56:17 by msebbane         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../includes/pipex.h"
+
+void	ft_putstr_fd(char *s, int fd)
+{
+	int	i;
+
+	i = 0;
+	while (s[i])
+	{
+		write(fd, &s[i], 1);
+		i++;
+	}
+}
 
 char	*ft_strnstr(const char *big, const char *little, size_t len)
 {
