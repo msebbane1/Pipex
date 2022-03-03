@@ -6,7 +6,7 @@
 #    By: msebbane <msebbane@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2021/10/07 21:50:04 by marvin            #+#    #+#              #
-#    Updated: 2022/03/02 13:01:00 by msebbane         ###   ########.fr        #
+#    Updated: 2022/03/03 10:38:22 by msebbane         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -21,8 +21,6 @@ CFLAGS = -Wall -Wextra -Werror -g #-fsanitize=address
 
 SRCS = libft/ft_split.c srcs/main.c libft/ft_strjoin.c libft/ft_strlen.c \
 libft/ft_substr.c srcs/pipex.c
-
-SRCS_BONUS = 
 
 RM = rm -f
 
@@ -50,7 +48,7 @@ ${OBJECTS}/%.o: ${SOURCES}/%.c
 
 clean :
 		@echo "\033[1;32m""Supression des fichiers binaires (.o)..."
-		${RM} ${OBJS} $(SRCS_BONUS:.c=.o)
+		${RM} ${OBJS}
 
 fclean: clean
 		@echo "\033[1;32m""Supression des executables et librairies..."
@@ -60,4 +58,4 @@ fclean: clean
 re: fclean all
 	@echo "\033[0m"
 
-.PHONY: all bonus clean fclean re
+.PHONY: all clean fclean re

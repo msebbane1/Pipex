@@ -6,50 +6,58 @@
 /*   By: msebbane <msebbane@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/23 11:46:13 by msebbane          #+#    #+#             */
-/*   Updated: 2022/03/02 16:21:38 by msebbane         ###   ########.fr       */
+/*   Updated: 2022/03/03 11:12:48 by msebbane         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../includes/pipex.h"
-
+/*
+fork() divisera notre processus en deux sous-processus : il renvoie 0 pour 
+le processus enfant, un nombre différent de zéro pour le processus parent 
+ou un -1 en cas d'erreur. Aussi: fork() divise le processus en deux processus
+parallèles et simultanés, qui se produisent en même temps.
+Le programme suivant crée un tube puis se dédouble pour créer un processus 
+fils. 
+Le processus fils hérite d'un ensemble dupliqué de descripteurs de fichier 
+qui font référence au même tube. Après le fork(2), chaque processus ferme 
+les descripteurs dont il n'a pas besoin pour le tube.
+Le père écrit alors la chaîne contenue dans l'argument de la ligne 
+de commande du programme et le fils lit cette chaîne, 
+un octet à la fois, qu'il affiche sur sa sortie standard.
+*/
 void	parent_process(int fileout, char **argv, char **envp, int *end)
 {
-	dup2(end[0], STDIN_FILENO); // -> end[0] is the stdin
-	dup2(fileout, STDOUT_FILENO); // -> fileout is the stdout
-	close(end[1]); // fermeture du pipe qu'on utilise pas
-	run(argv[3], envp); // execve function for each possible path (see below)
+	dup2(end[0], STDIN_FILENO);
+	dup2(fileout, STDOUT_FILENO);
+	close(end[1]);
+	run(argv[3], envp);
 }
 
 void	child_process(int filein, char **argv, char **envp, int *end)
 {
-	dup2(end[1], STDOUT_FILENO); // -> (l'entree(filein) devient le vrai stdin) // we want filein to be execve() input
-	dup2(filein, STDIN_FILENO); // -> La sortie standart deviens end[1] // we want end[1] to be execve() stdout
+	dup2(end[1], STDOUT_FILENO);
+	dup2(filein, STDIN_FILENO);
 	close(end[0]);
-	run(argv[2], envp);// execve function for each possible path (see below)
+	run(argv[2], envp);
 }
 
-/*fork() divisera notre processus en deux sous-processus : il renvoie 0 pour le processus enfant, un nombre différent de zéro pour le processus parent ou un -1 en cas d'erreur.
-Aussi: fork() divise le processus en deux processus parallèles et simultanés, qui se produisent en même temps. Ce sera important pour la section 2.
-*/
 void	pipex(int filein, int fileout, char **argv, char **envp)
 {
 	int		end[2];
 	int		parent;
 
-	//pipe(end); // creation du tuyau
-	//parent = fork();
 	if (pipe(end) == -1)
 	{
-		perror("pipe failed");
+		perror("Pipe failed");
 		exit(EXIT_FAILURE);
 	}
 	parent = fork();
 	if (parent == -1)
 	{
-		perror("fork failed");
+		perror("Fork failed");
 		exit(EXIT_FAILURE);
 	}
-	if (parent == 0) //  ou !parent == 0 si fork() returns 0, we are in the child process
+	if (parent == 0)
 		child_process(filein, argv, envp, end);
 	else
 	{
