@@ -6,11 +6,32 @@
 /*   By: msebbane <msebbane@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/10/18 12:36:21 by msebbane          #+#    #+#             */
-/*   Updated: 2022/03/01 15:17:50 by msebbane         ###   ########.fr       */
+/*   Updated: 2022/03/03 11:40:40 by msebbane         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../includes/pipex.h"
+
+int	ft_strncmp(const char *s1, const char *s2, size_t n)
+{
+	size_t			i;
+	size_t			j;
+	unsigned char	*str1;
+	unsigned char	*str2;
+
+	i = 0;
+	j = 1;
+	str1 = (unsigned char *)s1;
+	str2 = (unsigned char *)s2;
+	if (n == 0)
+		return (0);
+	while (str1[i] && str2[i] && str1[i] == str2[i] && j < n)
+	{
+		i++;
+		j++;
+	}
+	return (str1[i] - str2[i]);
+}
 
 static char	*ft_strcat(char *dest, char const *src)
 {

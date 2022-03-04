@@ -6,7 +6,7 @@
 /*   By: msebbane <msebbane@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/01 15:33:37 by msebbane          #+#    #+#             */
-/*   Updated: 2022/03/03 11:12:00 by msebbane         ###   ########.fr       */
+/*   Updated: 2022/03/03 11:40:58 by msebbane         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -45,7 +45,7 @@ char	*get_path(char **env)
 	i = 0;
 	while (env[i])
 	{
-		if (strncmp(env[i], "PATH=", 5) == 0)
+		if (ft_strncmp(env[i], "PATH=", 5) == 0)
 			return (env[i] + 5);
 		i++;
 	}
